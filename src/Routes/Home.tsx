@@ -4,6 +4,7 @@ import { IGetMoviesResults, getMovies } from "../api";
 import styled from "styled-components";
 import { makeImagePath } from "../utils";
 import { AnimatePresence, motion } from "framer-motion";
+import { PathMatch, useMatch, useNavigate } from "react-router-dom";
 
 const Wrapper = styled.div`
   background: black;
@@ -58,6 +59,7 @@ const Box = styled(motion.div)<{ bgPhoto: string }>`
   background-position: center center;
   height: 200px;
   font-size: 66px;
+  cursor: pointer;
   &:first-child {
     transform-origin: center left;
   }
@@ -120,6 +122,8 @@ const infoVariants = {
 const offset = 6;
 
 export default function Home() {
+  const navigate = useNavigate();
+  const bigMovieMatch: PathMatch<string> | null = useMatch("/movies/:movieId");
   const { data, isLoading } = useQuery<IGetMoviesResults>(
     ["movies", "nowPlaying"],
     getMovies
@@ -136,6 +140,9 @@ export default function Home() {
     }
   };
   const toggleLeaving = () => setLeaving((prev) => !prev);
+  const onBoxClicked = (moviedId: number) => {
+    navigate(`/movies/${moviedId}`);
+  };
   return (
     <Wrapper>
       {isLoading ? (
@@ -164,7 +171,9 @@ export default function Home() {
                   .slice(offset * index, offset * index + offset)
                   .map((movie) => (
                     <Box
+                      layoutId={movie.id + ""}
                       key={movie.id}
+                      onClick={() => onBoxClicked(movie.id)}
                       variants={boxVariants}
                       initial="normal"
                       whileHover="horver"
@@ -179,6 +188,23 @@ export default function Home() {
               </Row>
             </AnimatePresence>
           </Slider>
+          <AnimatePresence>
+            {bigMovieMatch ? (
+              <motion.div
+                layoutId={bigMovieMatch.params.movieId}
+                style={{
+                  position: "absolute",
+                  width: "40vw",
+                  height: "80vh",
+                  backgroundColor: "red",
+                  top: 50,
+                  left: 0,
+                  right: 0,
+                  margin: "0 auto",
+                }}
+              />
+            ) : null}
+          </AnimatePresence>
         </>
       )}
     </Wrapper>
