@@ -7,6 +7,7 @@ import { AnimatePresence, motion } from "framer-motion";
 
 const Wrapper = styled.div`
   background: black;
+  padding-bottom: 200px;
 `;
 
 const Loader = styled.div`
@@ -58,6 +59,12 @@ const Box = styled(motion.div)<{ bgPhoto: string }>`
   height: 200px;
   color: red;
   font-size: 66px;
+  &:first-child {
+    transform-origin: center left;
+  }
+  &:last-child {
+    transform-origin: center right;
+  }
 `;
 
 const rowVariants = {
@@ -69,6 +76,21 @@ const rowVariants = {
   },
   exit: {
     x: -window.outerWidth - 5,
+  },
+};
+
+const boxVariants = {
+  normal: {
+    scale: 1,
+  },
+  horver: {
+    scale: 1.3,
+    y: -50,
+    transition: {
+      delay: 0.5,
+      duration: 0.3,
+      type: "tween",
+    },
   },
 };
 
@@ -120,6 +142,10 @@ export default function Home() {
                   .map((movie) => (
                     <Box
                       key={movie.id}
+                      variants={boxVariants}
+                      initial="normal"
+                      whileHover="horver"
+                      transition={{ type: "tween" }}
                       bgPhoto={makeImagePath(movie.backdrop_path, "w500")}
                     />
                   ))}
